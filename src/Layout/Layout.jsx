@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom"
 import SearchBar from "../components/SearchBar"
-import Instagram from "../icons/instagram"
-import Github from "../icons/Github"
+/* import Instagram from "../icons/instagram"
+import Github from "../icons/Github" */
 
 const Layout = () => {
   return (
@@ -17,7 +17,7 @@ const Layout = () => {
         </main>
         <footer className="flex flex-col items-center justify-end h-[150px]">
           <p>Made by <span className="text-neutral-400">Monsster</span></p>
-          <div className="flex gap-2 mt-3">
+   {/*        <div className="flex gap-2 mt-3">
             <Link 
               className="hover:scale-125 transition-all"
             to="https://www.instagram.com/_.monsster._/"
@@ -34,7 +34,7 @@ const Layout = () => {
             >
              <Github/>
             </Link>
-          </div>
+          </div> */}
         </footer>
     </div>
   )

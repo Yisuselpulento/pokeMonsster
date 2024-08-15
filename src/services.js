@@ -27,9 +27,8 @@ export const getAllPokemons = async () => {
 export const getPokemonDetails = async (poke) => {
     try {
         const {data : pokemon} = await axios.get(`https://pokeapi.co/api/v2/pokemon/${poke}`)
-        console.log(pokemon) 
-
-        const {id, sprites, name, height, weight , types} = pokemon
+       /*   console.log(pokemon)  */ 
+        const {id, sprites, name, height, weight , types, stats} = pokemon
 
         return {
             id,
@@ -37,10 +36,32 @@ export const getPokemonDetails = async (poke) => {
             types,
             height,
             weight,
-            img : sprites.versions["generation-v"]["black-white"].animated.front_default,
-            img2 : sprites.other["official-artwork"].front_default
+            sprites : [
+                sprites.versions["generation-i"]["red-blue"].front_default,
+                sprites.versions["generation-iii"]["emerald"].front_default,
+                sprites.versions["generation-iii"]["firered-leafgreen"].front_default,
+             sprites.versions["generation-v"]["black-white"].animated.front_default
+            
+            ],
+            img : sprites.other["official-artwork"].front_default,
+            stats : [
+                {name: "Hp", stat : stats[0].base_stat },
+                {name: "Atk", stat : stats[1].base_stat },
+                {name: "Def", stat : stats[2].base_stat },
+                {name: "SpA", stat : stats[3].base_stat },
+                {name: "SpD", stat : stats[4].base_stat },
+                {name: "SPD", stat : stats[5].base_stat },
+            ]
         }
     } catch (error) {
         console.log(error)
     } 
+}
+
+export const getDescriptionPokemon = async (idPoke) => {
+
+    const {data} = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${idPoke}`)
+    return data.flavor_text_entries[26].flavor_text
+   
+
 }

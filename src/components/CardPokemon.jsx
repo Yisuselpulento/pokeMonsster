@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
 import { colorByType } from "../helpers/colorType"
 import { capitalizeFirstLetter } from "../helpers/capitalizeLetter"
 import { formatId } from "../helpers/formatId"
 import { Link } from "react-router-dom"
+
 
 
 const CardPokemon = ( {pokemon} ) => {

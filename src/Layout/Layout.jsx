@@ -1,16 +1,14 @@
 import { Link, Outlet } from "react-router-dom"
-import SearchBar from "../components/SearchBar"
 /* import Instagram from "../icons/instagram"
 import Github from "../icons/Github" */
 
 const Layout = () => {
   return (
     <div className="p-2 bg-neutral-900 text-white min-h-screen ">
-        <header>
+        <header className="mb-3">
             <img 
             className="w-[200px]"
             src="/pokemonsster.webp" alt="Logo de la pagina" />
-            <SearchBar/>
         </header>
         <main>
         <Outlet/>

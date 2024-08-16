@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getDescriptionPokemon, getPokemonDetails } from "../services"
+import { getCountersPokemon, getDescriptionPokemon, getPokemonDetails } from "../services"
 import { Link, useParams } from "react-router-dom"
 import { colorByType } from "../helpers/colorType"
 import { formatId } from "../helpers/formatId"
@@ -14,9 +14,12 @@ const PokemonsDynamic = () => {
   useEffect(() => {
     const fetchPokemonDetail = async ()=> {
      const pokeInfo = await getPokemonDetails(pokeid)
-     const pokeDescription = await getDescriptionPokemon(pokeInfo.id)
-     console.log({...pokeInfo,pokeDescription })
-     setPokemon({...pokeInfo, description : pokeDescription})
+     const [pokeDescription, pokeCounters] = await Promise.all([
+      getDescriptionPokemon(pokeInfo.id),
+      getCountersPokemon(pokeInfo.types[0].type.name)
+    ]);
+     console.log({...pokeInfo,pokeDescription,pokeCounters })
+     setPokemon({...pokeInfo, description : pokeDescription, pokeCounters})
     }
  
   
@@ -27,7 +30,7 @@ const PokemonsDynamic = () => {
     setInfoActive(section)
   }
   
-  const {name,height, weight,types,img, id, description, sprites, stats} = pokemon
+  const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters} = pokemon
   
   return (
     <div>
@@ -41,7 +44,7 @@ const PokemonsDynamic = () => {
        </div>
       <div  className={`bg-gradient-to-b from-neutral-900/100 to-transparent/40 ${
     types && types[0] ? colorByType[types[0].type.name] : "bg-neutral-800"
-  } bg-opacity-20 hover:bg-opacity-20 rounded-full p-3`}>
+  } bg-opacity-40  rounded-full p-3`}>
           <img 
           className="w-[250px]"
           src={img} alt="imagen del pokemon" />
@@ -68,10 +71,10 @@ const PokemonsDynamic = () => {
           Info
         </button>
         <button 
-          onClick={() => handleButtonClick("Ataques")}
-          className={`bg-neutral-800 px-5 py-3 rounded-tr-xl w-full hover:bg-neutral-700 ${infoActive === "Ataques" ? "bg-neutral-700 border-b-2 border-indigo-800" : ""}`}
+          onClick={() => handleButtonClick("Pros/Contra")}
+          className={`bg-neutral-800 px-3 py-3 rounded-tr-xl w-full hover:bg-neutral-700 ${infoActive === "Pros/Contra" ? "bg-neutral-700 border-b-2 border-indigo-800" : ""}`}
         >
-          Ataques
+          Pros/Contra
         </button>
       </div>
 
@@ -113,6 +116,54 @@ const PokemonsDynamic = () => {
             ))}
             </div>
           </div>
+        </section>
+      )}
+
+{infoActive === "Pros/Contra" && (
+        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center ">
+          <div className="flex flex-col gap-6 items-start w-full">
+          <div>
+            <p className="mb-2">Fuerte contra:</p>
+            <div className="flex gap-2 flex-wrap">
+              {pokeCounters.half_damage_from?.map((tipo,i)=> (
+                <p 
+                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
+                key={i}>{tipo.name}</p>
+              ) )}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2">Muy fuerte contra:</p>
+            <div className="flex gap-2 flex-wrap">
+              {pokeCounters.double_damage_to?.map((tipo,i)=> (
+                <p 
+                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
+                key={i}>{tipo.name}</p>
+              ) )}
+            </div>
+          </div>
+          <div>
+            <p className="mb-2">Debil contra:</p>
+            <div className="flex gap-2 flex-wrap">
+              {pokeCounters.half_damage_to?.map((tipo,i)=> (
+                <p 
+                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
+                key={i}>{tipo.name}</p>
+              ) )}
+            </div>
+          </div>
+          <div >
+            <p className="mb-2">Muy debil contra:</p>
+            <div className="flex gap-2 flex-wrap">
+              {pokeCounters.double_damage_from?.map((tipo,i)=> (
+                <p 
+                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
+                key={i}>{tipo.name}</p>
+              ) )}
+            </div>
+          </div>
+          </div>
+         
         </section>
       )}
     </div>

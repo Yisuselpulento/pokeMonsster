@@ -2,7 +2,7 @@ import axios from "axios"
 
 export const getAllPokemons = async () => {
     try {
-        const {data} = await axios.get("https://pokeapi.co/api/v2/pokemon?&limit=20")
+        const {data} = await axios.get("https://pokeapi.co/api/v2/pokemon?&limit=151")
 
         const PokemonsInfo = await Promise.all(
             data.results.map(async (poke) => {

@@ -10,7 +10,7 @@ const Layout = () => {
             className="w-[200px]"
             src="/pokemonsster.webp" alt="Logo de la pagina" />
         </header>
-        <main className="min-h-screen">
+        <main className="min-h-[500px] flex flex-col items-center justify-center ">
         <Outlet/>
         </main>
         <footer className="flex flex-col items-center justify-end h-[150px]">

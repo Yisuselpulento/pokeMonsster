@@ -4,15 +4,18 @@ import { Link, useParams } from "react-router-dom"
 import { colorByType } from "../helpers/colorType"
 import { formatId } from "../helpers/formatId"
 import { capitalizeFirstLetter } from "../helpers/capitalizeLetter"
+import Spinner from "../components/Spinner"
 
 const PokemonsDynamic = () => {
   const [pokemon, setPokemon] = useState({})
   const [infoActive, setInfoActive] = useState("Stats")
+  const [loading, setLoading] = useState(true)
 
   const {pokeid} = useParams()
   
   useEffect(() => {
     const fetchPokemonDetail = async ()=> {
+      setLoading(true)
      const pokeInfo = await getPokemonDetails(pokeid)
      const [pokeDescription, pokeCounters] = await Promise.all([
       getDescriptionPokemon(pokeInfo.id),
@@ -20,6 +23,7 @@ const PokemonsDynamic = () => {
     ]);
      console.log({...pokeInfo,pokeDescription,pokeCounters })
      setPokemon({...pokeInfo, description : pokeDescription, pokeCounters})
+     setLoading(false);
     }
  
   
@@ -31,9 +35,36 @@ const PokemonsDynamic = () => {
   }
   
   const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters} = pokemon
+
+  const colorBarraStat = (number) => {
+    if (number <= 99) {
+      return "bg-indigo-600";
+    }
+    if (number >= 100 && number < 150) {
+      return "bg-cyan-300";
+    }
+    if (number >= 150 && number < 200) {
+      return "bg-yellow-400";
+    }
+    if (number >= 200) {
+      return "bg-yellow-400 shadow-lg shadow-yellow-300 rouned-none";
+    }
+  };
+
+  const widthStat = (number)=> {
+      if (number > 245) {
+        const newNumber = 245
+        return newNumber
+      } 
+      return number
+  }
+
+  if (loading) {
+    return <Spinner />; 
+  }
   
   return (
-    <div>
+    <div className="w-full">
       <section className="flex flex-col items-center gap-5">
         <Link 
         to="/"
@@ -52,7 +83,7 @@ const PokemonsDynamic = () => {
           <div className="flex gap-5">
             {types?.map((tipo,i) => (
               <p 
-              className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4`}
+              className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4 w-[80px] text-center`}
               key={i}>{tipo.type.name}</p>
             ) )}
           </div>
@@ -79,16 +110,21 @@ const PokemonsDynamic = () => {
       </div>
 
       {infoActive === "Stats" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10">
-          <div className="flex justify-between ">
-            <div className="flex flex-col gap-2 font-bold">
+        <section className="bg-neutral-800 py-5 p-2 pt-10 ">
+          <div className="flex gap-3">
+            <div className="flex flex-col gap-2 font-bold w-[50px]">
               {stats?.map((stat, i) => (
                 <p key={i}>{stat.name}</p>
               ))}
             </div>
-            <div className="flex flex-col gap-2 font-bold">
+            <div className="flex flex-col gap-3  w-full ">
               {stats?.map((stat, i) => (
-                <p key={i}>{stat.stat}</p>
+                <div 
+                className="flex gap-1 items-center "
+                key={i}>
+                  <p className="w-[35px] text-sm">{stat.stat}</p>
+                  <div className={`w-[30px] h-3 ${colorBarraStat(stat.stat)} rounded-tr rounded-br`} style={{ width: `${widthStat(stat.stat)}px` }}></div>
+                </div>
               ))}
             </div>
           </div>

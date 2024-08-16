@@ -21,7 +21,7 @@ const PokemonsDynamic = () => {
       getDescriptionPokemon(pokeInfo.id),
       getCountersPokemon(pokeInfo.types[0].type.name)
     ]);
-     console.log({...pokeInfo,pokeDescription,pokeCounters })
+   /*   console.log({...pokeInfo,pokeDescription,pokeCounters }) */
      setPokemon({...pokeInfo, description : pokeDescription, pokeCounters})
      setLoading(false);
     }
@@ -59,6 +59,14 @@ const PokemonsDynamic = () => {
       return number
   }
 
+const formatHeight = (height) => {
+  return (height / 10).toFixed(1) + ' m';
+};
+
+const formatWeight = (weight) => {
+  return (weight / 10).toFixed(1) + ' kg';
+};
+
   if (loading) {
     return <Spinner />; 
   }
@@ -83,7 +91,7 @@ const PokemonsDynamic = () => {
           <div className="flex gap-5">
             {types?.map((tipo,i) => (
               <p 
-              className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4 w-[80px] text-center`}
+              className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4 w-[86px] text-center`}
               key={i}>{tipo.type.name}</p>
             ) )}
           </div>
@@ -132,26 +140,32 @@ const PokemonsDynamic = () => {
       )}
    
 
-      {infoActive === "Info" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center ">
+   {infoActive === "Info" && (
+        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center">
           <p>{description}</p>
-          <div className="flex justify-between w-full px-10 ">
-          <p>{`Height: ${height}`}</p>
-          <p>{`Weight: ${weight}`}</p>
+          <div className="flex justify-between w-full px-10 bg-neutral-700 py-7 rounded-t-lg font-bold">
+            <p>{`Altura: ${formatHeight(height)}`}</p>
+            <p>{`Peso: ${formatWeight(weight)}`}</p>
           </div>
-          <div className="flex  flex-col items-center gap-5 ">
-            <p className="text-lg font-bold">Sprites</p>
-            <div className="flex gap-3 items-center justify-between">
-            {sprites?.map((sprite, i) => (
-              <img 
-                className="object-contain "
-                key={i} 
-                src={sprite} 
-                alt="imagen del sprite" 
-              />
-            ))}
+          {sprites && sprites.length > 0 ? (
+            <div className="flex flex-col items-center gap-5">
+              <p className="text-lg font-bold">Sprites</p>
+              <div className="flex gap-3 items-center justify-between">
+                {sprites.map((sprite, i) => (
+                  sprite && (
+                    <img
+                      className="object-contain"
+                      key={i}
+                      src={sprite}
+                      alt="imagen del sprite"
+                    />
+                  )
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <p className="bg-red-500 p-10 text-white">No hay sprites disponibles</p>
+          )}
         </section>
       )}
 

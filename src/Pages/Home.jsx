@@ -17,7 +17,7 @@ const Home = () => {
        const fetchpokemons = async ()=> {
         setLoading(true); 
            const pokemons = await  getAllPokemons(currentPage, pokemonsPerPage)
-           console.log(pokemons) 
+          /*  console.log(pokemons)  */
            setpokemons(pokemons.PokemonsInfo)
            setNumberPages(Math.ceil(pokemons.numberPage / pokemonsPerPage))
            setLoading(false);

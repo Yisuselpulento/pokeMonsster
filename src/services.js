@@ -8,10 +8,11 @@ export const getAllPokemons = async (currentPage, pokemonsPerPage) => {
         const PokemonsInfo = await Promise.all(
             data.results.map(async (poke) => {
                 const { data } = await axios.get(poke.url);
-               /*   console.log(data)  */
+               /*  console.log(data)  */ 
               const { name,sprites,types, id  } = data 
                 return {
                     id,
+                    spriteFix : sprites.front_default,
                     name,
                     img: sprites.versions["generation-v"]["black-white"].animated.front_default,
                     types
@@ -52,7 +53,7 @@ export const getAllPokemons = async (currentPage, pokemonsPerPage) => {
 export const getPokemonDetails = async (poke) => {
     try {
         const {data : pokemon} = await axios.get(`https://pokeapi.co/api/v2/pokemon/${poke}`)
-       /*   console.log(pokemon)  */ 
+      /*  console.log(pokemon)  */
         const {id, sprites, name, height, weight , types, stats} = pokemon
 
         return {
@@ -60,7 +61,7 @@ export const getPokemonDetails = async (poke) => {
             name,
             types,
             height,
-            weight,
+            weight,       
             sprites : [
                 sprites.versions["generation-i"]["red-blue"].front_default,
                 sprites.versions["generation-iii"]["emerald"].front_default,
@@ -86,14 +87,18 @@ export const getPokemonDetails = async (poke) => {
 export const getDescriptionPokemon = async (idPoke) => {
 
     const {data} = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${idPoke}`)
-    return data.flavor_text_entries[26].flavor_text
+    const flavorTextEntry = data.flavor_text_entries.find(entry => entry.language.name === 'es')
+    if (flavorTextEntry) {
+        return flavorTextEntry.flavor_text;
+      } else {
+        return 'Descripción en español no disponible.';
+      }
 
 }
 
 export const getCountersPokemon = async (idPoke) => {
 
     const {data} = await axios.get(`https://pokeapi.co/api/v2/type/${idPoke}`)
-   /*  console.log(data.damage_relations) */
     return data.damage_relations
 
 }

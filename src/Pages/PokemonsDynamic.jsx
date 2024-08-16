@@ -28,7 +28,7 @@ const PokemonsDynamic = () => {
   }
   
   const {name,height, weight,types,img, id, description, sprites, stats} = pokemon
-
+  
   return (
     <div>
       <section className="flex flex-col items-center gap-5">
@@ -39,13 +39,17 @@ const PokemonsDynamic = () => {
         <p className="text-xl font-bold">{capitalizeFirstLetter(name)}</p>
         <p className="text-sm">{formatId(+id)}</p>
        </div>
+      <div  className={`bg-gradient-to-b from-neutral-900/100 to-transparent/40 ${
+    types && types[0] ? colorByType[types[0].type.name] : "bg-neutral-800"
+  } bg-opacity-20 hover:bg-opacity-20 rounded-full p-3`}>
           <img 
           className="w-[250px]"
           src={img} alt="imagen del pokemon" />
+       </div> 
           <div className="flex gap-5">
             {types?.map((tipo,i) => (
               <p 
-              className={`bg-[${colorByType[tipo.type.name]}]  rounded-full py-1 px-2`}
+              className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4`}
               key={i}>{tipo.type.name}</p>
             ) )}
           </div>

@@ -1,13 +1,38 @@
 import axios from "axios"
 
-export const getAllPokemons = async () => {
+export const getAllPokemons = async (currentPage, pokemonsPerPage) => {
     try {
-        const {data} = await axios.get("https://pokeapi.co/api/v2/pokemon?&limit=151")
+        const offset = (currentPage - 1) * pokemonsPerPage;
+        const {data} = await axios.get(`https://pokeapi.co/api/v2/pokemon?limit=${pokemonsPerPage}&offset=${offset}`)
+            const numberPage = data.count
+        const PokemonsInfo = await Promise.all(
+            data.results.map(async (poke) => {
+                const { data } = await axios.get(poke.url);
+               /*   console.log(data)  */
+              const { name,sprites,types, id  } = data 
+                return {
+                    id,
+                    name,
+                    img: sprites.versions["generation-v"]["black-white"].animated.front_default,
+                    types
+                }
+            })
+        );
+       
+        return {PokemonsInfo, numberPage}
+    } catch (error) {
+        console.log(error)
+    } 
+}
+
+/* export const getGlobalPokemons = async () => {
+    try {
+        const {data} = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0")
 
         const PokemonsInfo = await Promise.all(
             data.results.map(async (poke) => {
                 const { data } = await axios.get(poke.url);
-               /*  console.log(data) */
+              
               const { name,sprites,types, id  } = data 
                 return {
                     id,
@@ -22,7 +47,7 @@ export const getAllPokemons = async () => {
     } catch (error) {
         console.log(error)
     } 
-}
+} */
 
 export const getPokemonDetails = async (poke) => {
     try {

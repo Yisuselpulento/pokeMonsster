@@ -21,7 +21,7 @@ const CardPokemon = ( {pokemon} ) => {
       <img src={img} alt="imagen del pokemon"/>
       </div>
       <p className="text-sm font-bold">{capitalizeFirstLetter(name)}</p>
-    {  <div className="flex gap-1">
+    {  <div className="flex gap-1 flex-wrap justify-center">
         {types.map((tipo,i) => (
           <p 
           className={`${colorByType[tipo.type.name]} rounded-full px-1 text-sm`}

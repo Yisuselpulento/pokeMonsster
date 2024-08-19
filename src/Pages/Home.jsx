@@ -1,34 +1,18 @@
+import { useContext } from "react";
 import { PokemonContext } from "../context/PokemonContext";
 import CardPokemon from "../components/CardPokemon";
 import SearchBar from "../components/SearchBar";
 import Spinner from "../components/Spinner";
 import Pagination from "../components/Pagination";
-import { useContext } from "react";
 
 const Home = () => {
-    const {
-        showPokemons,
-        loading,
-        numberPages,
-        currentPage,
-        handlePageChange,
-        searchTerm,
-        handleSearchPokemon,
-    } = useContext(PokemonContext);
+    const { showPokemons, loading } = useContext(PokemonContext);
 
     return (
         <>
-            <SearchBar
-                searchTerm={searchTerm}
-                handleSearchPokemon={handleSearchPokemon}
-            />
+            <SearchBar />
             <div className="flex gap-2 flex-wrap justify-center flex-col my-10 min-h-[500px] items-center">
-                <Pagination
-                    numberPages={numberPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                    loading={loading}
-                />
+                <Pagination />
                 {loading ? (
                     <Spinner />
                 ) : (
@@ -38,12 +22,7 @@ const Home = () => {
                         ))}
                     </div>
                 )}
-                <Pagination
-                    numberPages={numberPages}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                    loading={loading}
-                />
+                <Pagination />
             </div>
         </>
     );

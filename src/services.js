@@ -1,4 +1,5 @@
 import axios from "axios"
+import { getEvolutions } from "./helpers/evolutionChain"
 
 export const getAllPokemons = async (limit = 807, offset = 0) => {
     try {
@@ -29,7 +30,14 @@ export const getAllPokemons = async (limit = 807, offset = 0) => {
 export const getPokemonDetails = async (poke) => {
     try {
         const {data : pokemon} = await axios.get(`https://pokeapi.co/api/v2/pokemon/${poke}`)
-      /*  console.log(pokemon)  */
+     /*   console.log(pokemon)  */
+       const { data: dataSpecies } = await axios.get(pokemon.species.url);
+       const { data: dataEvolution } = await axios.get(
+        dataSpecies.evolution_chain.url
+      );
+
+      const evolutions = await getEvolutions(dataEvolution);
+
         const {id, sprites, name, height, weight , types, stats} = pokemon
 
         return {
@@ -37,7 +45,8 @@ export const getPokemonDetails = async (poke) => {
             name,
             types,
             height,
-            weight,       
+            weight, 
+            evolutions,      
             sprites : [
                 sprites.versions["generation-i"]["red-blue"].front_default,
                 sprites.versions["generation-iii"]["emerald"].front_default,
@@ -78,3 +87,10 @@ export const getCountersPokemon = async (idPoke) => {
     return data.damage_relations
 
 }
+
+export const getEvolutionsData = (evolutions) => {
+    return evolutions.map(
+      async (evolution) =>
+        await axios.get(`https://pokeapi.co/api/v2/pokemon/${evolution.name}/`)
+    );
+  };

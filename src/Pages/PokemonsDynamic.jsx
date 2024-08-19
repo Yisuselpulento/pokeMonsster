@@ -21,20 +21,20 @@ const PokemonsDynamic = () => {
       getDescriptionPokemon(pokeInfo.id),
       getCountersPokemon(pokeInfo.types[0].type.name)
     ]);
-   /*   console.log({...pokeInfo,pokeDescription,pokeCounters }) */
+      console.log({...pokeInfo,pokeDescription,pokeCounters }) 
      setPokemon({...pokeInfo, description : pokeDescription, pokeCounters})
      setLoading(false);
     }
  
   
     fetchPokemonDetail()
-  }, [])
+  }, [pokeid])
 
   const handleButtonClick = (section) => {
     setInfoActive(section)
   }
   
-  const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters} = pokemon
+  const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters, evolutions} = pokemon
 
   const colorBarraStat = (number) => {
     if (number < 100) {
@@ -91,6 +91,23 @@ const formatWeight = (weight) => {
               className={`${colorByType[tipo.type.name]}  rounded-full py-1 px-4 w-[86px] text-center`}
               key={i}>{tipo.type.name}</p>
             ) )}
+          </div>
+          <div className="flex justify-between">
+          {evolutions?.length > 1 ? (
+            evolutions.map((evo, i) => (
+              <div key={i} className="flex flex-col items-center">
+                <Link 
+                
+                to={`/${evo.name}`}>
+                <img className="scale-75 bg-neutral-500 rounded-full h-[100px] w-[100px] bg-opacity-15 p-2" src={evo.image} alt="imagen de evoluciones" />
+                </Link>
+                <p className="text-sm">{evo.name}</p>
+                <p className="text-sm">Nv: {evo.min_level}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-sm font-semibold mt-0">No tiene evolucion.</p>
+          )}
           </div>
       </section>
       <div className="flex justify-between mt-10">

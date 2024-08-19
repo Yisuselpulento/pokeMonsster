@@ -37,16 +37,13 @@ const PokemonsDynamic = () => {
   const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters} = pokemon
 
   const colorBarraStat = (number) => {
-    if (number <= 99) {
+    if (number < 100) {
       return "bg-indigo-600";
-    }
-    if (number >= 100 && number < 150) {
+    } else if (number < 150) {
       return "bg-cyan-300";
-    }
-    if (number >= 150 && number < 200) {
+    } else if (number < 200) {
       return "bg-yellow-400";
-    }
-    if (number >= 200) {
+    } else {
       return "bg-yellow-400 shadow-lg shadow-yellow-300 rouned-none";
     }
   };

@@ -14,21 +14,16 @@ const PokemonsDynamic = () => {
   const {pokeid} = useParams()
   
   useEffect(() => {
-    const fetchPokemonDetail = async ()=> {
-      setLoading(true)
-     const pokeInfo = await getPokemonDetails(pokeid)
-     const [pokeDescription, pokeCounters] = await Promise.all([
-      getDescriptionPokemon(pokeInfo.id),
-      getCountersPokemon(pokeInfo.types[0].type.name)
-    ]);
-      console.log({...pokeInfo,pokeDescription,pokeCounters }) 
-     setPokemon({...pokeInfo, description : pokeDescription, pokeCounters})
-     setLoading(false);
-    }
- 
-  
-    fetchPokemonDetail()
-  }, [pokeid])
+    const fetchPokemonDetail = async () => {
+        setLoading(true);
+        const pokeInfo = await getPokemonDetails(pokeid);
+        console.log(pokeInfo)
+        setPokemon(pokeInfo);
+        setLoading(false);
+    };
+
+    fetchPokemonDetail();
+}, [pokeid]);
 
   const handleButtonClick = (section) => {
     setInfoActive(section)

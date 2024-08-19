@@ -40,12 +40,19 @@ export const getPokemonDetails = async (poke) => {
 
         const {id, sprites, name, height, weight , types, stats} = pokemon
 
+        const [description, pokeCounters] = await Promise.all([
+            getDescriptionPokemon(id),
+            getCountersPokemon(types[0].type.name)
+        ]);
+
         return {
             id,
             name,
             types,
             height,
             weight, 
+            description,
+            pokeCounters,
             evolutions,      
             sprites : [
                 sprites.versions["generation-i"]["red-blue"].front_default,

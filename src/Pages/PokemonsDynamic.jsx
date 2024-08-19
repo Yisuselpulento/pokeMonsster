@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getCountersPokemon, getDescriptionPokemon, getPokemonDetails } from "../services"
+import {  getPokemonDetails } from "../services"
 import { Link, useParams } from "react-router-dom"
 import { colorByType } from "../helpers/colorType"
 import { formatId } from "../helpers/formatId"

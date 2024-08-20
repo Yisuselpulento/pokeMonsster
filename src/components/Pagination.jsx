@@ -23,7 +23,7 @@ const Pagination = () => {
     }
 
     return (
-        <nav className={`${loading && "hidden"}`}>
+        <nav className={`${loading && "hidden"} my-3`}>
             <ul className="inline-flex -space-x-px text-sm">
                 <li>
                     <button

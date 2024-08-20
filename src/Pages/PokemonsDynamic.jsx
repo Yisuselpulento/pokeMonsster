@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import {  getPokemonDetails } from "../services"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useNavigate } from "react-router-dom"
 import { colorByType } from "../helpers/colorType"
 import { formatId } from "../helpers/formatId"
 import { capitalizeFirstLetter } from "../helpers/capitalizeLetter"
@@ -11,19 +11,28 @@ const PokemonsDynamic = () => {
   const [infoActive, setInfoActive] = useState("Stats")
   const [loading, setLoading] = useState(true)
 
+  const navigate = useNavigate();
   const {pokeid} = useParams()
   
   useEffect(() => {
     const fetchPokemonDetail = async () => {
-        setLoading(true);
-        const pokeInfo = await getPokemonDetails(pokeid);
-        console.log(pokeInfo)
-        setPokemon(pokeInfo);
-        setLoading(false);
+        try {
+            setLoading(true);
+            const pokeInfo = await getPokemonDetails(pokeid);
+            setPokemon(pokeInfo);
+        } catch (error) {
+            if (error.message === "Pokémon not found") {
+                navigate("*"); 
+            } else {
+                console.error("Error fetching Pokémon details:", error);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     fetchPokemonDetail();
-}, [pokeid]);
+}, [pokeid, navigate]);
 
   const handleButtonClick = (section) => {
     setInfoActive(section)
@@ -64,7 +73,7 @@ const formatWeight = (weight) => {
   }
   
   return (
-    <div className="w-full">
+    <div className="w-full md:flex flex-col md:items-center">
       <section className="flex flex-col items-center gap-5">
         <Link 
         to="/"
@@ -94,9 +103,9 @@ const formatWeight = (weight) => {
                 <Link 
                 
                 to={`/${evo.name}`}>
-                <img className="scale-75 bg-neutral-500 rounded-full h-[100px] w-[100px] bg-opacity-15 p-2" src={evo.image} alt="imagen de evoluciones" />
+                <img className="scale-75 hover:bg-neutral-600  bg-neutral-500 rounded-full h-[100px] w-[100px] bg-opacity-15 p-2" src={evo.image} alt="imagen de evoluciones" />
                 </Link>
-                <p className="text-sm">{evo.name}</p>
+                <p className="text-sm">{capitalizeFirstLetter(evo.name)}</p>
                 <p className="text-sm">Nv: {evo.min_level}</p>
               </div>
             ))
@@ -105,7 +114,7 @@ const formatWeight = (weight) => {
           )}
           </div>
       </section>
-      <div className="flex justify-between mt-10">
+      <div className="flex justify-between mt-10  md:w-[500px]">
       <button 
           onClick={() => handleButtonClick("Stats")}
           className={`bg-neutral-800 px-5 py-3 rounded-tl-xl w-full hover:bg-neutral-700 ${infoActive === "Stats" ? "bg-neutral-700 border-b-2 border-indigo-800" : ""}`}
@@ -127,7 +136,7 @@ const formatWeight = (weight) => {
       </div>
 
       {infoActive === "Stats" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10 ">
+        <section className="bg-neutral-800 py-5 p-2 pt-10 md:w-[500px]">
           <div className="flex gap-3">
             <div className="flex flex-col gap-2 font-bold w-[50px]">
               {stats?.map((stat, i) => (
@@ -150,7 +159,7 @@ const formatWeight = (weight) => {
    
 
    {infoActive === "Info" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center">
+        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center  md:w-[500px]">
           <p>{description}</p>
           <div className="flex justify-between w-full px-10 bg-neutral-700 py-7 rounded-t-lg font-bold">
             <p>{`Altura: ${formatHeight(height)}`}</p>
@@ -179,7 +188,7 @@ const formatWeight = (weight) => {
       )}
 
 {infoActive === "Pros/Contra" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center ">
+        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center  md:w-[500px] ">
           <div className="flex flex-col gap-6 items-start w-full">
           <div>
             <p className="mb-2">Fuerte contra:</p>

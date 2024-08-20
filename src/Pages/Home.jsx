@@ -11,7 +11,7 @@ const Home = () => {
     return (
         <>
             <SearchBar />
-            <div className="flex gap-2 flex-wrap justify-center flex-col my-10 min-h-[500px] items-center">
+            <div className="flex gap-2 flex-wrap justify-center flex-col my-10 min-h-[500px] items-center md:w-[1000px]">
                 <Pagination />
                 {loading ? (
                     <Spinner />

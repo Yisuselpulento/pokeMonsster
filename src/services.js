@@ -72,7 +72,12 @@ export const getPokemonDetails = async (poke) => {
             ]
         }
     } catch (error) {
-        console.log(error)
+        if (error.response && error.response.status === 404) {
+            throw new Error("Pokémon not found");
+        } else {
+            console.error("Error fetching Pokémon details:", error);
+            throw error; 
+        }
     } 
 }
 

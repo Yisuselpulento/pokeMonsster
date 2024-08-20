@@ -1,6 +1,5 @@
 import { Link, Outlet } from "react-router-dom"
-/* import Instagram from "../icons/instagram"
-import Github from "../icons/Github" */
+import { FaGithub,FaInstagram  } from "react-icons/fa"
 
 const Layout = () => {
   return (
@@ -15,14 +14,14 @@ const Layout = () => {
         </main>
         <footer className="flex flex-col items-center justify-end h-[150px]">
           <p>Made by <span className="text-neutral-400">Monsster</span></p>
-   {/*        <div className="flex gap-2 mt-3">
+         <div className="flex gap-2 mt-3">
             <Link 
               className="hover:scale-125 transition-all"
             to="https://www.instagram.com/_.monsster._/"
             target="_blank"
             rel="noopener noreferrer"
             >
-             <Instagram/>
+             <FaInstagram className="size-6" />
             </Link>
             <Link 
             className="hover:scale-125 transition-all"
@@ -30,9 +29,9 @@ const Layout = () => {
             target="_blank"
             rel="noopener noreferrer"
             >
-             <Github/>
+             <FaGithub className="size-6" />
             </Link>
-          </div> */}
+          </div> 
         </footer>
     </div>
   )

@@ -75,9 +75,14 @@ const formatWeight = (weight) => {
   return (
     <div className="w-full md:flex flex-col md:items-center">
       <section className="flex flex-col items-center gap-5">
-        <Link 
-        to="/"
-        className="text-start text-blue-500 hover:text-blue-400 w-full px-2">Atras</Link>
+        <div className=" w-full">
+      <button 
+        className="text-blue-600 hover:text-blue-700"
+        onClick={() => navigate(-1)}
+      >
+        Atrás
+      </button>
+        </div>
        <div className="text-center">
         <p className="text-xl font-bold">{capitalizeFirstLetter(name)}</p>
         <p className="text-sm">{formatId(+id)}</p>

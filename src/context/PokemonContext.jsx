@@ -12,6 +12,7 @@ export const PokemonProvider = ({ children }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const pokemonsPerPage = 51;
+    const [favoritePokemons, setFavoritePokemons] = useState([]);
 
     useEffect(() => {
         const fetchPokemons = async () => {
@@ -52,6 +53,16 @@ export const PokemonProvider = ({ children }) => {
         setSearchTerm(e.target.value);
     };
 
+    const toggleFavoritePokemon = (pokemon) => {
+        setFavoritePokemons((prevFavorites) => {
+            if (prevFavorites.find((fav) => fav.id === pokemon.id)) {
+                return prevFavorites.filter((fav) => fav.id !== pokemon.id);
+            } else {
+                return [...prevFavorites, pokemon];
+            }
+        });
+    };
+
     return (
         <PokemonContext.Provider
             value={{
@@ -64,6 +75,8 @@ export const PokemonProvider = ({ children }) => {
                 searchTerm,
                 handlePageChange,
                 handleSearchPokemon,
+                toggleFavoritePokemon,
+                favoritePokemons
             }}
         >
             {children}

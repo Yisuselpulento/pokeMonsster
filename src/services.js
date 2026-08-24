@@ -50,22 +50,48 @@ export const getAllPokemons = (limit = 807) => cached(`pokemons_all_${limit}`, a
   }
 }, { persist: true, isValid: (v) => v?.PokemonsInfo?.length > 0 })
 
+// Tabla de efectividad combinada (considera TODOS los tipos del Pokémon).
+// Antes se usaba solo el primer tipo -> debilidades erróneas en doble tipo.
+const computeMatchups = (relationsList) => {
+  const mult = Object.fromEntries(TYPES.map(t => [t, 1]))
+  relationsList.forEach(rel => {
+    rel.double_damage_from.forEach(x => { mult[x.name] *= 2 })
+    rel.half_damage_from.forEach(x => { mult[x.name] *= 0.5 })
+    rel.no_damage_from.forEach(x => { mult[x.name] = 0 })
+  })
+  const weak = []; const resist = []; const immune = []
+  Object.entries(mult).forEach(([name, m]) => {
+    if (m === 0) immune.push({ name, mult: m })
+    else if (m > 1) weak.push({ name, mult: m })
+    else if (m < 1) resist.push({ name, mult: m })
+  })
+  weak.sort((a, b) => b.mult - a.mult)
+  resist.sort((a, b) => a.mult - b.mult)
+  return { weak, resist, immune }
+}
+
 export const getPokemonDetails = (poke) => cached(`poke_detail_${poke}`, async () => {
   try {
     const { data: pokemon } = await axios.get(`${API}/pokemon/${poke}`)
     const { data: dataSpecies } = await axios.get(pokemon.species.url)
     const { data: dataEvolution } = await axios.get(dataSpecies.evolution_chain.url)
 
-    const [evolutions, pokeCounters] = await Promise.all([
+    const [evolutions, ...typeRels] = await Promise.all([
       getEvolutions(dataEvolution),
-      getCountersPokemon(pokemon.types[0].type.name)
+      ...pokemon.types.map(t => axios.get(t.type.url).then(r => r.data.damage_relations))
     ])
+
+    const matchups = computeMatchups(typeRels)
 
     // Descripción en español desde la species ya obtenida (evita re-fetch).
     const flavor = dataSpecies.flavor_text_entries.find(e => e.language.name === "es")
-    const description = flavor ? flavor.flavor_text : "Descripción en español no disponible."
+    const description = flavor
+      ? flavor.flavor_text.replace(/\f/g, " ")
+      : "Descripción en español no disponible."
 
     const { id, sprites, name, height, weight, types, stats } = pokemon
+    const genusEs = dataSpecies.genera.find(g => g.language.name === "es")
+    const genusEn = dataSpecies.genera.find(g => g.language.name === "en")
 
     return {
       id,
@@ -74,8 +100,21 @@ export const getPokemonDetails = (poke) => cached(`poke_detail_${poke}`, async (
       height,
       weight,
       description,
-      pokeCounters,
+      matchups,
       evolutions,
+      // Info extra
+      genus: (genusEs || genusEn)?.genus ?? "",
+      abilities: pokemon.abilities.map(a => ({ name: a.ability.name, hidden: a.is_hidden })),
+      baseExperience: pokemon.base_experience,
+      captureRate: dataSpecies.capture_rate,
+      baseHappiness: dataSpecies.base_happiness,
+      growthRate: dataSpecies.growth_rate?.name,
+      eggGroups: dataSpecies.egg_groups.map(e => e.name),
+      habitat: dataSpecies.habitat?.name ?? "desconocido",
+      isLegendary: dataSpecies.is_legendary,
+      isMythical: dataSpecies.is_mythical,
+      cry: pokemon.cries?.latest ?? null,
+      shiny: sprites.other["official-artwork"].front_shiny,
       sprites: [
         sprites.versions["generation-i"]["red-blue"].front_default,
         sprites.versions["generation-iii"].emerald.front_default,
@@ -90,7 +129,8 @@ export const getPokemonDetails = (poke) => cached(`poke_detail_${poke}`, async (
         { name: "SpA", stat: stats[3].base_stat },
         { name: "SpD", stat: stats[4].base_stat },
         { name: "SPD", stat: stats[5].base_stat }
-      ]
+      ],
+      totalStats: stats.reduce((sum, s) => sum + s.base_stat, 0)
     }
   } catch (error) {
     if (error.response && error.response.status === 404) {

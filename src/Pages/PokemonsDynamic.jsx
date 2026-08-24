@@ -38,7 +38,16 @@ const PokemonsDynamic = () => {
     setInfoActive(section)
   }
   
-  const {name,height, weight,types,img, id, description, sprites, stats, pokeCounters, evolutions} = pokemon
+  const {name,height, weight,types,img, id, description, sprites, stats, matchups, evolutions, genus, abilities, baseExperience, captureRate, baseHappiness, growthRate, eggGroups, habitat, isLegendary, isMythical, cry, totalStats} = pokemon
+
+  const playCry = () => {
+    if (!cry) return
+    const audio = new Audio(cry)
+    audio.volume = 0.4
+    audio.play().catch(() => {})
+  }
+
+  const multLabel = (m) => (m === 0.25 ? "¼×" : m === 0.5 ? "½×" : m === 2 ? "2×" : m === 4 ? "4×" : `${m}×`)
 
   const colorBarraStat = (number) => {
     if (number < 100) {
@@ -83,9 +92,20 @@ const formatWeight = (weight) => {
         Atrás
       </button>
         </div>
-       <div className="text-center">
-        <p className="text-xl font-bold">{capitalizeFirstLetter(name)}</p>
-        <p className="text-sm">{formatId(+id)}</p>
+       <div className="text-center flex flex-col items-center gap-1">
+        <div className="flex items-center gap-2">
+          <p className="text-xl font-bold">{capitalizeFirstLetter(name)}</p>
+          {cry && (
+            <button onClick={playCry} aria-label="Escuchar sonido" title="Escuchar sonido"
+              className="text-neutral-400 hover:text-white">🔊</button>
+          )}
+        </div>
+        <p className="text-sm text-neutral-400">{formatId(+id)}</p>
+        {genus && <p className="text-sm text-neutral-300">{genus}</p>}
+        <div className="flex gap-2">
+          {isLegendary && <span className="text-xs bg-yellow-600 rounded-full px-2 py-0.5">Legendario</span>}
+          {isMythical && <span className="text-xs bg-purple-600 rounded-full px-2 py-0.5">Mítico</span>}
+        </div>
        </div>
       <div  className={`bg-gradient-to-b from-neutral-900/100 to-transparent/40 ${
     types && types[0] ? colorByType[types[0].type.name] : "bg-neutral-800"
@@ -132,11 +152,11 @@ const formatWeight = (weight) => {
         >
           Info
         </button>
-        <button 
-          onClick={() => handleButtonClick("Pros/Contra")}
-          className={`bg-neutral-800 px-3 py-3 rounded-tr-xl w-full hover:bg-neutral-700 ${infoActive === "Pros/Contra" ? "bg-neutral-700 border-b-2 border-indigo-800" : ""}`}
+        <button
+          onClick={() => handleButtonClick("Debilidades")}
+          className={`bg-neutral-800 px-3 py-3 rounded-tr-xl w-full hover:bg-neutral-700 ${infoActive === "Debilidades" ? "bg-neutral-700 border-b-2 border-indigo-800" : ""}`}
         >
-          Pros/Contra
+          Debilidades
         </button>
       </div>
 
@@ -159,6 +179,10 @@ const formatWeight = (weight) => {
               ))}
             </div>
           </div>
+          <div className="flex justify-between font-bold border-t border-neutral-700 mt-4 pt-3 px-1">
+            <p>Total</p>
+            <p className="text-indigo-400">{totalStats}</p>
+          </div>
         </section>
       )}
    
@@ -170,6 +194,28 @@ const formatWeight = (weight) => {
             <p>{`Altura: ${formatHeight(height)}`}</p>
             <p>{`Peso: ${formatWeight(weight)}`}</p>
           </div>
+
+          <div className="w-full px-4 flex flex-col gap-2">
+            <p className="font-bold">Habilidades</p>
+            <div className="flex gap-2 flex-wrap">
+              {abilities?.map((ab, i) => (
+                <span key={i} className="bg-neutral-700 rounded-full px-3 py-1 text-sm">
+                  {capitalizeFirstLetter(ab.name.replace(/-/g, " "))}
+                  {ab.hidden && <span className="text-yellow-400 text-xs"> (oculta)</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="w-full px-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Exp. base</span><span className="font-bold">{baseExperience ?? "—"}</span></div>
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Ratio captura</span><span className="font-bold">{captureRate}</span></div>
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Felicidad</span><span className="font-bold">{baseHappiness}</span></div>
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Crecimiento</span><span className="font-bold">{growthRate}</span></div>
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Hábitat</span><span className="font-bold">{habitat}</span></div>
+            <div className="flex justify-between border-b border-neutral-700 py-1"><span className="text-neutral-400">Grupos huevo</span><span className="font-bold text-right">{eggGroups?.join(", ")}</span></div>
+          </div>
+
           {sprites && sprites.length > 0 ? (
             <div className="flex flex-col items-center gap-5">
               <p className="text-lg font-bold">Sprites</p>
@@ -192,51 +238,36 @@ const formatWeight = (weight) => {
         </section>
       )}
 
-{infoActive === "Pros/Contra" && (
-        <section className="bg-neutral-800 py-5 p-2 pt-10 flex flex-col gap-12 items-center  md:w-[500px] ">
-          <div className="flex flex-col gap-6 items-start w-full">
-          <div>
-            <p className="mb-2">Fuerte contra:</p>
+{infoActive === "Debilidades" && (
+        <section className="bg-neutral-800 py-5 p-4 pt-10 flex flex-col gap-6 items-start md:w-[500px] w-full">
+          <div className="w-full">
+            <p className="mb-2 font-bold text-red-400">Débil contra (recibe más daño)</p>
             <div className="flex gap-2 flex-wrap">
-              {pokeCounters.half_damage_from?.map((tipo,i)=> (
-                <p 
-                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
-                key={i}>{tipo.name}</p>
-              ) )}
+              {matchups?.weak?.length > 0 ? matchups.weak.map((tipo, i) => (
+                <p className={`${colorByType[tipo.name]} rounded-full py-1 px-3 text-sm flex items-center gap-1`} key={i}>
+                  {tipo.name} <span className="font-bold text-black/70">{multLabel(tipo.mult)}</span>
+                </p>
+              )) : <p className="text-sm text-neutral-400">Ninguna.</p>}
             </div>
           </div>
-          <div>
-            <p className="mb-2">Muy fuerte contra:</p>
+          <div className="w-full">
+            <p className="mb-2 font-bold text-green-400">Resistente contra (recibe menos daño)</p>
             <div className="flex gap-2 flex-wrap">
-              {pokeCounters.double_damage_to?.map((tipo,i)=> (
-                <p 
-                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
-                key={i}>{tipo.name}</p>
-              ) )}
+              {matchups?.resist?.length > 0 ? matchups.resist.map((tipo, i) => (
+                <p className={`${colorByType[tipo.name]} rounded-full py-1 px-3 text-sm flex items-center gap-1`} key={i}>
+                  {tipo.name} <span className="font-bold text-black/70">{multLabel(tipo.mult)}</span>
+                </p>
+              )) : <p className="text-sm text-neutral-400">Ninguna.</p>}
             </div>
           </div>
-          <div>
-            <p className="mb-2">Debil contra:</p>
+          <div className="w-full">
+            <p className="mb-2 font-bold text-blue-300">Inmune contra (sin daño)</p>
             <div className="flex gap-2 flex-wrap">
-              {pokeCounters.half_damage_to?.map((tipo,i)=> (
-                <p 
-                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
-                key={i}>{tipo.name}</p>
-              ) )}
+              {matchups?.immune?.length > 0 ? matchups.immune.map((tipo, i) => (
+                <p className={`${colorByType[tipo.name]} rounded-full py-1 px-3 text-sm`} key={i}>{tipo.name}</p>
+              )) : <p className="text-sm text-neutral-400">Ninguna.</p>}
             </div>
           </div>
-          <div >
-            <p className="mb-2">Muy debil contra:</p>
-            <div className="flex gap-2 flex-wrap">
-              {pokeCounters.double_damage_from?.map((tipo,i)=> (
-                <p 
-                className={`${colorByType[tipo.name]} rounded-full py-1 px-2`}
-                key={i}>{tipo.name}</p>
-              ) )}
-            </div>
-          </div>
-          </div>
-         
         </section>
       )}
     </div>

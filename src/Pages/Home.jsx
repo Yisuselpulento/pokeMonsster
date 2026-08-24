@@ -17,8 +17,8 @@ const Home = () => {
                     <Spinner />
                 ) : (
                     <div className="flex gap-2 flex-wrap justify-center min-h-[500px]">
-                        {showPokemons?.map((pokemon, i) => (
-                            <CardPokemon key={i} pokemon={pokemon} />
+                        {showPokemons?.map((pokemon) => (
+                            <CardPokemon key={pokemon.id} pokemon={pokemon} />
                         ))}
                     </div>
                 )}

@@ -25,7 +25,12 @@ const CardPokemon = ({ pokemon }) => {
     >
       <p className="text-start w-full text-gray-300 text-sm mt-2">{formatId(id)}</p>
       <div className="bg-gradient-to-b from-neutral-700 to-transparent rounded-full h-[70px] w-[70px] flex items-center justify-center bg-opacity-10">
-        <img src={imageUrl} alt="imagen del pokemon" />
+        <img
+          src={imageUrl}
+          alt={`imagen de ${name}`}
+          loading="lazy"
+          onError={(e) => { if (spriteFix && e.target.src !== spriteFix) e.target.src = spriteFix }}
+        />
       </div>
       <p className="text-sm font-bold">{capitalizeFirstLetter(name)}</p>
       <div className="flex gap-1 flex-wrap justify-center">

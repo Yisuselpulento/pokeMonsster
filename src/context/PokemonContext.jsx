@@ -12,7 +12,19 @@ export const PokemonProvider = ({ children }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const pokemonsPerPage = 51;
-    const [favoritePokemons, setFavoritePokemons] = useState([]);
+    const [favoritePokemons, setFavoritePokemons] = useState(() => {
+        try {
+            return JSON.parse(window.localStorage.getItem("favoritePokemons")) || [];
+        } catch {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem("favoritePokemons", JSON.stringify(favoritePokemons));
+        } catch { /* noop */ }
+    }, [favoritePokemons]);
 
     useEffect(() => {
         const fetchPokemons = async () => {

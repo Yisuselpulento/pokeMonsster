@@ -3,8 +3,18 @@
 // inválidos. Los datos de Pokémon casi no cambian -> TTL largo.
 const mem = new Map();
 const inflight = new Map();
-const PREFIX = "pokecache:";
+// La versión invalida cachés viejos cuando cambia la forma de los datos
+// (p. ej. el detalle pasó de `pokeCounters` a `matchups`).
+const SCHEMA = "v2";
+const PREFIX = `pokecache:${SCHEMA}:`;
 const DEFAULT_TTL = 7 * 24 * 60 * 60 * 1000; // 7 días
+
+// Purga entradas de versiones anteriores al cargar el módulo.
+try {
+  Object.keys(window.localStorage)
+    .filter(k => k.startsWith("pokecache:") && !k.startsWith(PREFIX))
+    .forEach(k => window.localStorage.removeItem(k));
+} catch { /* noop */ }
 
 export const cached = async (key, fn, { ttl = DEFAULT_TTL, persist = false, isValid = () => true } = {}) => {
   const now = Date.now();
